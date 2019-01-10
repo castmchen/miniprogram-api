@@ -1,0 +1,14 @@
+{
+    "apps": [{
+        "name": "www.lovepapa.site",
+        "script": "./bin/www.js",
+        "cwd": "./",
+        "watch": [
+            "bin",
+            "dist"
+        ],
+        "error_file": "./logs/pm_error.log",
+        "out_file": "./logs/pm_normal.log",
+        "log_date_format": "YYYY-MM-DD HH:mm Z"
+    }]
+}
