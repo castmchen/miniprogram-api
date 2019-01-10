@@ -10,12 +10,14 @@ const httpPort = normalizePort(process.env.Port || 8080)
 const httpsPort = 443
 const app = server.Server.bootstrap().app
 const httpServer = http.createServer(app).listen(httpPort)
+debug(httpPort)
+console.log(httpPort)
 httpServer.on("error", onError)
 httpServer.on("listening", onListening)
 
-const httpsServer = https.createServer(null, app).listen(httpsPort)
-httpsServer.on("error", onError)
-httpsServer.on("listening", onListening)
+// const httpsServer = https.createServer(null, app).listen(httpsPort)
+// httpsServer.on("error", onError)
+// httpsServer.on("listening", onListening)
 
 function normalizePort(val) {
     const port = parseInt(val, 10)
