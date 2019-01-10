@@ -5,13 +5,17 @@
 const server = require("../dist/server.js")
 const debug = require("debug")("express:server")
 const http = require("http")
+const https = require("https")
 const httpPort = normalizePort(process.env.Port || 8080)
-const app = server.Server.bootstrap().app;
-app.set("port", httpPort)
-const httpServer = http.createServer(app);
-httpServer.listen(httpPort)
+const httpsPort = 443
+const app = server.Server.bootstrap().app
+const httpServer = http.createServer(app).listen(httpPort)
 httpServer.on("error", onError)
 httpServer.on("listening", onListening)
+
+const httpsServer = https.createServer(null, app).listen(httpsPort)
+httpsServer.on("error", onError)
+httpsServer.on("listening", onListening)
 
 function normalizePort(val) {
     const port = parseInt(val, 10)
@@ -50,5 +54,5 @@ function onError(error) {
 function onListening() {
     const address = httpServer.address()
     const bind = typeof httpPort === "string" ? "Pipe" + httpPort : "Port" + httpPort
-    debug("Listening on" + bind)
+    debug(`currently is listening on ${address}:${bind}`)
 }
