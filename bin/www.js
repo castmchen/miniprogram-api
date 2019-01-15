@@ -14,7 +14,9 @@ httpServer.on("listening", onListening)
 const wss = new webSocket.Server({ noServer: true })
 const onConnection = require('../dist/socket/socket.js')
 const mongoose = app.get("mongoose");
-wss.on("connection", onConnection(ws, mongoose))
+wss.on("connection", (ws) => {
+    onConnection(ws, mongoose)
+})
 httpServer.on('upgrade', (request, socket, head) => {
     if (request.url === '/chat') {
         wss.handleUpgrade(request, socket, head, (ws) => {
