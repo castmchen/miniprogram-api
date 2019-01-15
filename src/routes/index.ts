@@ -16,16 +16,17 @@ export class IndexRouter extends BaseRouter {
     router.get(
       "/service",
       (req: Request, res: Response, next: NextFunction) => {
+        const token = "castm";
         let signature = req.query.signature;
         let timestap = req.query.timestamp;
         let nonce = req.query.nonce;
         let echostr = req.query.echostr;
 
-        let array = new Array("castm", timestap, nonce).sort();
-        let str = array.toString().replace(/, /g, "");
-        var sha1Code = crypto.createHash("sha1");
-        var code = sha1Code.update(str, "utf8").digest("hex");
-
+        let arrayStr = new Array(token, timestap, nonce).sort().join("");
+        let sha1Code = crypto.createHash("sha1");
+        let code = sha1Code.update(arrayStr).digest("hex");
+        console.log(code)
+        console.log(signature)
         res.send(code === signature ? echostr : "error");
       }
     );
