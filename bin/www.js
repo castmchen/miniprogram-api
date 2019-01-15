@@ -7,22 +7,17 @@ const debug = require("debug")("express:server")
 const http = require("http")
 const webSocket = require("ws")
 const httpPort = normalizePort(process.env.Port || 8080)
-console.log(httpPort)
 const app = server.Server.bootstrap().app
 const httpServer = http.createServer(app)
 httpServer.on("error", onError)
 httpServer.on("listening", onListening)
 const wss = new webSocket.Server({ noServer: true })
-wss.on("connection", (ws) => {
-    ws.on("message", (message) => {
-        console.log(message)
-    })
-    ws.send(JSON.stringify({message: "you are right"}))
-})
+const onConnection = require('../dist/socket/socket.js')
+const mongoose = app.get("mongoose");
+wss.on("connection", onConnection(ws, mongoose))
 httpServer.on('upgrade', (request, socket, head) => {
     if (request.url === '/chat') {
         wss.handleUpgrade(request, socket, head, (ws) => {
-            debug("server has been connect successfully by wss")
             wss.emit("connection", ws, request)
         })
     } else {
@@ -30,7 +25,7 @@ httpServer.on('upgrade', (request, socket, head) => {
     }
 })
 httpServer.listen(httpPort)
-console.log("server has started, listening on port: ", httpPort)
+
 
 
 function normalizePort(val) {
@@ -69,6 +64,5 @@ function onError(error) {
 
 function onListening() {
     const address = httpServer.address()
-    const bind = typeof httpPort === "string" ? "Pipe" + httpPort : "Port" + httpPort
-    debug(`currently is listening on ${address}:${bind}`)
+    console.log(`server has started successfully and listenning address => ${address}, port => ${httpPort}`)
 }

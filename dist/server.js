@@ -18,7 +18,7 @@ class Server {
         this.routers();
         this.api();
     }
-    api() { }
+    api() {}
     config() {
         this.app.use(express.static(path.join(__dirname, "public")));
         this.app.set("trust proxy", ip => {
@@ -44,3 +44,4 @@ class Server {
     }
 }
 exports.Server = Server;
+//# sourceMappingURL=server.js.map

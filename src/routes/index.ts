@@ -1,5 +1,7 @@
+import mongoose from "mongoose";
 import { BaseRouter } from "./router";
 import { NextFunction, Request, Response, Router } from "express";
+import crypto from "crypto";
 
 export class IndexRouter extends BaseRouter {
   constructor() {
@@ -10,6 +12,23 @@ export class IndexRouter extends BaseRouter {
     router.get("/", (req: Request, res: Response, next: NextFunction) => {
       new IndexRouter().index(req, res, next);
     });
+
+    router.get(
+      "/service",
+      (req: Request, res: Response, next: NextFunction) => {
+        let signature = req.query.signature;
+        let timestap = req.query.timestamp;
+        let nonce = req.query.nonce;
+        let echostr = req.query.echostr;
+
+        let array = new Array("castm", timestap, nonce).sort();
+        let str = array.toString().replace(/, /g, "");
+        var sha1Code = crypto.createHash("sha1");
+        var code = sha1Code.update(str, "utf8").digest("hex");
+
+        res.send(code === signature ? echostr : "error");
+      }
+    );
   }
 
   public index(req: Request, res: Response, next: NextFunction) {

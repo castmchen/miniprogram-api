@@ -4,9 +4,10 @@ import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as logger from "morgan";
 import * as path from "path";
-// import errorHandler = require('errorhandler')
 import * as errorHandler from "errorhandler";
 import * as methodOverride from "method-override";
+import { mongo } from "./mongo/mongo";
+import { DB_CONFIG } from "./constant";
 
 export class Server {
   public app: express.Application;
@@ -17,12 +18,20 @@ export class Server {
 
   constructor() {
     this.app = express();
+    this.setupMongo();
     this.config();
     this.routers();
     this.api();
   }
 
   public api() {}
+
+  public setupMongo() {
+    let mongoClient = new mongo(DB_CONFIG).mongoSetup();
+    if (mongoClient != null) {
+      this.app.set("mongoose", mongoClient);
+    }
+  }
 
   public config() {
     this.app.use(express.static(path.join(__dirname, "public")));

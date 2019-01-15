@@ -19,3 +19,4 @@ class IndexRouter extends router_1.BaseRouter {
     }
 }
 exports.IndexRouter = IndexRouter;
+//# sourceMappingURL=index.js.map
