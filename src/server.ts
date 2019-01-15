@@ -18,7 +18,7 @@ export class Server {
 
   constructor() {
     this.app = express();
-    this.setupMongo();
+    // this.setupMongo();
     this.config();
     this.routers();
     this.api();

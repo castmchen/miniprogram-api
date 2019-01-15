@@ -8,6 +8,8 @@ const logger = require("morgan");
 const path = require("path");
 const errorHandler = require("errorhandler");
 const methodOverride = require("method-override");
+const mongo_1 = require("./mongo/mongo");
+const constant_1 = require("./constant");
 class Server {
     static bootstrap() {
         return new Server();
@@ -18,7 +20,13 @@ class Server {
         this.routers();
         this.api();
     }
-    api() {}
+    api() { }
+    setupMongo() {
+        let mongoClient = new mongo_1.mongo(constant_1.DB_CONFIG).mongoSetup();
+        if (mongoClient != null) {
+            this.app.set("mongoose", mongoClient);
+        }
+    }
     config() {
         this.app.use(express.static(path.join(__dirname, "public")));
         this.app.set("trust proxy", ip => {

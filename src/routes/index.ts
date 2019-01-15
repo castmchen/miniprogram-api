@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { BaseRouter } from "./router";
 import { NextFunction, Request, Response, Router } from "express";
-import crypto from "crypto";
+const crypto = require("crypto");
 
 export class IndexRouter extends BaseRouter {
   constructor() {
