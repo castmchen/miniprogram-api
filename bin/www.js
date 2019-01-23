@@ -66,5 +66,5 @@ function onError(error) {
 
 function onListening() {
     const address = httpServer.address()
-    console.log(`server has started successfully and listenning address => ${address}, port => ${httpPort}`)
+    console.log(`server has started successfully and listenning address => ${address.address}, port => ${httpPort}`)
 }

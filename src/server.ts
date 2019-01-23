@@ -1,4 +1,3 @@
-import { IndexRouter } from "./routes/index";
 import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
@@ -8,6 +7,12 @@ import * as errorHandler from "errorhandler";
 import * as methodOverride from "method-override";
 import { mongo } from "./mongo/mongo";
 import { DB_CONFIG } from "./constant";
+//#region  routers
+
+import { IndexRouter } from "./routes/index";
+import { WeChatRouter } from "./routes/wechat";
+
+//#endregion
 
 export class Server {
   public app: express.Application;
@@ -64,6 +69,7 @@ export class Server {
   public routers() {
     let router: express.Router = express.Router();
     IndexRouter.create(router);
+    WeChatRouter.create(router);
     this.app.use(router);
   }
 }
