@@ -1,4 +1,4 @@
-import { WECHAT_DEV_OBJ, WECHAT_LOGIN_URL } from "./../constant";
+import { WECHAT_LOGIN_URL } from "./../constant";
 import { BaseRouter } from "./router";
 import { Router, Request, Response, NextFunction } from "express";
 const crypto = require("crypto");
@@ -12,19 +12,19 @@ export class WeChatRouter extends BaseRouter {
       "/loginwechat",
       async (req: Request, res: Response, next: NextFunction) => {
         if (req.body != null && req.body.code) {
-          WECHAT_DEV_OBJ.code = req.body.code;
+          let targerUrl =  WECHAT_LOGIN_URL + req.body.code;
           let options = {
-            uri: WECHAT_LOGIN_URL,
+            uri: targerUrl,
             json: true
           };
+          var session_key = '';
           await rp(options).then(res => {
-            debugger;
-            console.log(res);
             if (res) {
+              session_key = res.session_key;
+              let openid = res.openid;
             }
           });
-
-          console.log("again");
+          res.send({sessionId : session_key})
         }
       }
     );
