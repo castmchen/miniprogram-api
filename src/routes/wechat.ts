@@ -26,13 +26,15 @@ export class WeChatRouter extends BaseRouter {
           await rp(options).then(async res => {
             if (res && !res.code) {
               var currentUser: userImp = null;
-              await userCollection
-                .findById(res.openid)
-                .then(p => (currentUser = p));
+              await userCollection.findOne({ userId: res.openid }).then(p => {
+                currentUser = p;
+              }).catch(err => {
+                  console.error(`An error has been occured while getting user information, Details: ${err}`);
+                });
               if (currentUser != null) {
                 session = currentUser.session;
                 currentUser.updatedTime = Date.now();
-                userCollection.update(
+                userCollection.updateOne(
                   { userId: currentUser.userId },
                   currentUser
                 );
@@ -67,16 +69,23 @@ export class WeChatRouter extends BaseRouter {
       async (req: Request, res: Response, next: NextFunction) => {
         var userInfo: userImp;
         await userCollection
-          .findOne({
-            $where: `this.session.sessionId == ${req.body.userInfo.sessionId}`
-          })
+          .findOneByWhere(
+            `this.session.sessionId == "${req.body.userInfo.sessionId}"`
+          )
           .then(p => {
             userInfo = p;
+          }).catch(err => {
+            console.error(`An error has been occured while getting user information, Details: ${err}`);
+            res.send({
+              message: "user information has been modified, check fail."
+            });
           });
-        let sha1Code = crypto.createHash("sha1");
+        var sha1Code = crypto.createHash("sha1");
+        console.log(req.body.userInfo.signature)
+        var signatureSelf = sha1Code.update(req.body.userInfo.rawData + userInfo.session.sessionValue).digest('hex');
+        console.log(signatureSelf)
         if (
-          req.body.signature ===
-          sha1Code(req.body.userInfo.rawDada + userInfo.session.sessionValue)
+          req.body.userInfo.signature === signatureSelf
         ) {
           let postUserInfo = req.body.userInfo.userInfo;
           userInfo.userName = postUserInfo.nickName;
@@ -85,7 +94,7 @@ export class WeChatRouter extends BaseRouter {
           userInfo.province = postUserInfo.province;
           userInfo.city = postUserInfo.city;
           userInfo.country = postUserInfo.country;
-          userCollection.update({ userId: userInfo.userId }, userInfo);
+          userCollection.updateOne({ userId: userInfo.userId }, userInfo);
           res.send({ message: "success" });
         } else {
           res.send({

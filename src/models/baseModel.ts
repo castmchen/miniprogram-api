@@ -37,12 +37,39 @@ export class baseModel<T extends Document> {
     return this._model.find(query).exec();
   }
 
+  findByWhere(query: string | Function): Promise<T[]> {
+    return this._model
+      .find()
+      .$where(query)
+      .exec();
+  }
+
+  async findOneByWhere(query: string | Function): Promise<T> {
+    return await new Promise((resolve, reject) => {
+      this._model
+        .find()
+        .$where(query)
+        .exec((err, res) => {
+          if (err) {
+            console.error(`An error has been occured while getting user information, Details: ${err}`);
+            reject(err);
+          } else {
+            resolve(res[0]);
+          }
+        });
+    });
+  }
+
   update(
     query: Object,
     obj: Object,
     options?: ModelUpdateOptions
   ): Promise<any> {
     return this._model.update(query, obj, options).exec();
+  }
+  
+  updateOne(query: Object, obj: Object){
+    return this._model.updateOne(query, obj).exec();
   }
 
   findOneAndUpdate(
