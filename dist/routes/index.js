@@ -1,33 +1,28 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const router_1 = require("./router");
-const crypto = require("crypto");
+const uuid = require("node-uuid");
 class IndexRouter extends router_1.BaseRouter {
     constructor() {
         super();
     }
     static create(router) {
-        router.get("/", (req, res, next) => {
-            new IndexRouter().index(req, res, next);
-        });
-        router.get("/service", (req, res, next) => {
-            const token = "castm";
-            let signature = req.query.signature;
-            let timestap = req.query.timestamp;
-            let nonce = req.query.nonce;
-            let echostr = req.query.echostr;
-            let arrayStr = new Array(token, timestap, nonce).sort().join("");
-            let sha1Code = crypto.createHash("sha1");
-            let code = sha1Code.update(arrayStr).digest("hex");
-            console.log(code);
-            console.log(signature);
-            res.send(code === signature ? echostr : "error");
-        });
+        router.get("/", (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            new IndexRouter().index(req, res);
+        }));
     }
-    index(req, res, next) {
-        this.title = "Home | Ts Blog";
+    index(req, res) {
+        this.title = "I LOVE PAPA";
         let options = {
-            message: "welcome to the Ts Blog"
+            message: "WELCOME TO PAPA SITE, THERE HAS WHAT YOU NEED"
         };
         this.render(req, res, "index", options);
     }

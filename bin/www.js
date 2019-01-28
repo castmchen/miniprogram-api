@@ -13,9 +13,8 @@ httpServer.on("error", onError)
 httpServer.on("listening", onListening)
 const wss = new webSocket.Server({ noServer: true })
 const onConnection = require('../dist/socket/socket.js')
-const mongoose = app.get("mongoose");
 wss.on("connection", (ws) => {
-    onConnection(ws, mongoose)
+    onConnection(ws)
 })
 httpServer.on('upgrade', (request, socket, head) => {
     if (request.url === '/chat') {
@@ -27,7 +26,6 @@ httpServer.on('upgrade', (request, socket, head) => {
     }
 })
 httpServer.listen(httpPort)
-
 
 
 function normalizePort(val) {
@@ -66,5 +64,5 @@ function onError(error) {
 
 function onListening() {
     const address = httpServer.address()
-    console.log(`server has started successfully and listenning address => ${address.address}, port => ${httpPort}`)
+    console.log(`server has started successfully and listened on => ${address}, port => ${httpPort}`)
 }

@@ -5,8 +5,8 @@ import * as logger from "morgan";
 import * as path from "path";
 import * as errorHandler from "errorhandler";
 import * as methodOverride from "method-override";
-import { mongo } from "./mongo/mongo";
 import { DB_CONFIG } from "./constant";
+import mongoose = require("mongoose");
 //#region  routers
 
 import { IndexRouter } from "./routes/index";
@@ -23,22 +23,30 @@ export class Server {
 
   constructor() {
     this.app = express();
-    // this.setupMongo();
-    this.config();
-    this.routers();
-    this.api();
+    this.setupPlugin();
   }
 
-  public api() {}
+  public setupPlugin() {
+    this.setupconfig();
 
-  public setupMongo() {
-    let mongoClient = new mongo(DB_CONFIG).mongoSetup();
-    if (mongoClient != null) {
-      this.app.set("mongoose", mongoClient);
-    }
+    mongoose.Promise = global.Promise;
+    mongoose
+      .connect(
+        `${DB_CONFIG.ConnectionString}/${DB_CONFIG.DBName}`,
+        { useNewUrlParser: true }
+      )
+      .then(db => {
+        console.log("Mongo DB has been connect succfully.");
+        this.setuprouters();
+      })
+      .catch(err => {
+        console.error(
+          `An error has been occured while initing router config, Details: ${err}`
+        );
+      });
   }
 
-  public config() {
+  public setupconfig() {
     this.app.use(express.static(path.join(__dirname, "public")));
     this.app.set("trust proxy", ip => {
       return ip != null || ip != "";
@@ -66,10 +74,13 @@ export class Server {
     this.app.use(errorHandler());
   }
 
-  public routers() {
-    let router: express.Router = express.Router();
-    IndexRouter.create(router);
-    WeChatRouter.create(router);
-    this.app.use(router);
+  public setuprouters() {
+    var indexRouter: express.Router = express.Router();
+    IndexRouter.create(indexRouter);
+    this.app.use(indexRouter);
+
+    var wechatRouter: express.Router = express.Router();
+    WeChatRouter.create(wechatRouter);
+    this.app.use("/wechat", wechatRouter);
   }
 }

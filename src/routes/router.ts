@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { Resolver } from "dns";
 
 export class BaseRouter {
   protected title: string;

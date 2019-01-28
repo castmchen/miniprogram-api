@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export function onConnection(ws: WebSocket) {
   ws.onmessage = event => {
     let chatInfo = JSON.parse(event.data);
