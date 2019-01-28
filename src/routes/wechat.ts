@@ -23,25 +23,34 @@ export class WeChatRouter extends BaseRouter {
           };
 
           var session = new sessionDomain();
-          await rp(options).then(res => {
+          await rp(options).then(async res => {
             if (res && !res.code) {
-              session.sessionId = uuid.v1();
-              session.sessionValue = res.session_key;
-              let userInfo = {
-                userId: res.openid,
-                unionId:
-                  typeof res.unionid != "undefined" && res.unionid != null
-                    ? res.unionid
-                    : "",
-                session: session,
-                userName: "",
-                avatarUrl: "",
-                createdTime: Date.now(),
-                updatedTime: Date.now(),
-                longtitude: 0,
-                latitude: 0
-              };
-              userCollection.create(userInfo);
+              var currentUser: userImp = null;
+              await userCollection
+                .findById(res.openid)
+                .then(p => (currentUser = p));
+              if (currentUser != null) {
+                session = currentUser.session;
+                currentUser.updatedTime = Date.now();
+                userCollection.update(
+                  { userId: currentUser.userId },
+                  currentUser
+                );
+              } else {
+                session.sessionId = uuid.v1();
+                session.sessionValue = res.session_key;
+                let userInfo = {
+                  userId: res.openid,
+                  unionId:
+                    typeof res.unionid != "undefined" && res.unionid != null
+                      ? res.unionid
+                      : "",
+                  session: session,
+                  createdTime: Date.now(),
+                  updatedTime: Date.now()
+                };
+                userCollection.create(userInfo);
+              }
             }
           });
           res.send({ sessionId: session.sessionId });
@@ -56,7 +65,6 @@ export class WeChatRouter extends BaseRouter {
     router.post(
       "/checkandupdateuser",
       async (req: Request, res: Response, next: NextFunction) => {
-        // var postUserInfo = { sessionId: sessionId, userInfo: userInfo.userInfo, rawData: userInfo.rawData, signature: userInfo.signature }
         var userInfo: userImp;
         await userCollection
           .findOne({
