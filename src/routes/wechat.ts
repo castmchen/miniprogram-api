@@ -68,7 +68,7 @@ export class WeChatRouter extends BaseRouter {
         var userInfo: userImp;
         await userCollection
           .findOne({
-            $where: `this.session.sessionId == ${req.body.sessionId}`
+            $where: `this.session.sessionId == ${req.body.userInfo.sessionId}`
           })
           .then(p => {
             userInfo = p;
@@ -76,9 +76,9 @@ export class WeChatRouter extends BaseRouter {
         let sha1Code = crypto.createHash("sha1");
         if (
           req.body.signature ===
-          sha1Code(req.body.rawDada + userInfo.session.sessionValue)
+          sha1Code(req.body.userInfo.rawDada + userInfo.session.sessionValue)
         ) {
-          let postUserInfo = req.body.userInfo;
+          let postUserInfo = req.body.userInfo.userInfo;
           userInfo.userName = postUserInfo.nickName;
           userInfo.avatarUrl = postUserInfo.avatarUrl;
           userInfo.gender = postUserInfo.gender;
