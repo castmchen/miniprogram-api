@@ -2,8 +2,6 @@ import { userImp } from "./../interfaces/userImp";
 import { baseModel } from "./baseModel";
 import { Schema } from "mongoose";
 
-import { sessionDomain } from "../domains/sessionDomain";
-
 const userSchema = new Schema({
   userId: { type: String, required: true },
   unionId: { type: String },
@@ -13,7 +11,7 @@ const userSchema = new Schema({
   province: { type: String },
   city: { type: String },
   country: { type: String },
-  session: { type: sessionDomain },
+  session: { type: Schema.Types.Mixed },
   createdTime: { type: Number },
   updatedTime: { type: Number },
   longitude: { type: Number },
