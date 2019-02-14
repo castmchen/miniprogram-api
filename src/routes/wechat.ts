@@ -22,25 +22,37 @@ export class WeChatRouter extends BaseRouter {
             json: true
           };
 
-          var session = new sessionDomain();
+          var result = { sessionId: null, userId: null };
           await rp(options).then(async res => {
             if (res && !res.code) {
               var currentUser: userImp = null;
-              await userCollection.findOne({ userId: res.openid }).then(p => {
-                currentUser = p;
-              }).catch(err => {
-                  console.error(`An error has been occured while getting user information, Details: ${err}`);
+              await userCollection
+                .findOne({ userId: res.openid })
+                .then(p => {
+                  currentUser = p;
+                })
+                .catch(err => {
+                  console.error(
+                    `An error has been occured while getting user information, Details: ${err}`
+                  );
                 });
               if (currentUser != null) {
-                session = currentUser.session;
+                currentUser.session.sessionValue = res.session_key;
+                result.sessionId = currentUser.session.sessionId;
+                result.userId = res.openid;
                 currentUser.updatedTime = Date.now();
+
                 userCollection.updateOne(
                   { userId: currentUser.userId },
                   currentUser
                 );
               } else {
+                var session = new sessionDomain();
                 session.sessionId = uuid.v1();
                 session.sessionValue = res.session_key;
+                result.sessionId = session.sessionId;
+                result.userId = res.openid;
+
                 let userInfo = {
                   userId: res.openid,
                   unionId:
@@ -55,7 +67,7 @@ export class WeChatRouter extends BaseRouter {
               }
             }
           });
-          res.send({ sessionId: session.sessionId });
+          res.send(result);
         }
       }
     );
@@ -74,19 +86,22 @@ export class WeChatRouter extends BaseRouter {
           )
           .then(p => {
             userInfo = p;
-          }).catch(err => {
-            console.error(`An error has been occured while getting user information, Details: ${err}`);
+          })
+          .catch(err => {
+            console.error(
+              `An error has been occured while getting user information, Details: ${err}`
+            );
             res.send({
               message: "user information has been modified, check fail."
             });
           });
         var sha1Code = crypto.createHash("sha1");
-        console.log(req.body.userInfo.signature)
-        var signatureSelf = sha1Code.update(req.body.userInfo.rawData + userInfo.session.sessionValue).digest('hex');
-        console.log(signatureSelf)
-        if (
-          req.body.userInfo.signature === signatureSelf
-        ) {
+        console.log(req.body.userInfo.signature);
+        var signatureSelf = sha1Code
+          .update(req.body.userInfo.rawData + userInfo.session.sessionValue)
+          .digest("hex");
+        console.log(signatureSelf);
+        if (req.body.userInfo.signature === signatureSelf) {
           let postUserInfo = req.body.userInfo.userInfo;
           userInfo.userName = postUserInfo.nickName;
           userInfo.avatarUrl = postUserInfo.avatarUrl;

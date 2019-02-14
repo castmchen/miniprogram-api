@@ -44,14 +44,34 @@ export class baseModel<T extends Document> {
       .exec();
   }
 
-  async findOneByWhere(query: string | Function): Promise<T> {
-    return await new Promise((resolve, reject) => {
+  findOneByWhere(query: string | Function): Promise<T> {
+    return new Promise((resolve, reject) => {
       this._model
         .find()
         .$where(query)
         .exec((err, res) => {
           if (err) {
-            console.error(`An error has been occured while getting user information, Details: ${err}`);
+            console.error(
+              `An error has been occured while getting user information, Details: ${err}`
+            );
+            reject(err);
+          } else {
+            resolve(res[0]);
+          }
+        });
+    });
+  }
+
+  findOneBySessionId(sessionId: string | Function): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this._model
+        .find()
+        .$where(`this.session.sessionId == "${sessionId}"`)
+        .exec((err, res) => {
+          if (err) {
+            console.error(
+              `An error has been occured while getting user information by sessionid => ${sessionId}, Details: ${err}`
+            );
             reject(err);
           } else {
             resolve(res[0]);
@@ -67,8 +87,8 @@ export class baseModel<T extends Document> {
   ): Promise<any> {
     return this._model.update(query, obj, options).exec();
   }
-  
-  updateOne(query: Object, obj: Object){
+
+  updateOne(query: Object, obj: Object) {
     return this._model.updateOne(query, obj).exec();
   }
 
