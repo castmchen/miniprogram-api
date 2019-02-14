@@ -96,11 +96,9 @@ export class WeChatRouter extends BaseRouter {
             });
           });
         var sha1Code = crypto.createHash("sha1");
-        console.log(req.body.userInfo.signature);
         var signatureSelf = sha1Code
           .update(req.body.userInfo.rawData + userInfo.session.sessionValue)
           .digest("hex");
-        console.log(signatureSelf);
         if (req.body.userInfo.signature === signatureSelf) {
           let postUserInfo = req.body.userInfo.userInfo;
           userInfo.userName = postUserInfo.nickName;
