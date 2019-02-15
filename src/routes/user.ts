@@ -87,25 +87,24 @@ export class UserRouter extends BaseRouter {
         var result = { lng: null, lat: null };
         var currentUser = null;
         await userCollection
-          .findOne({ userId: req.body.userId })
+          .findOne({ userId: req.query.userId })
           .then(userInfo => {
             if (userInfo && userInfo.longitude && userInfo.latitude) {
               return { lng: userInfo.longitude, lat: userInfo.latitude };
             } else {
               currentUser = userInfo;
               return rp({
-                uri: buildTencentGetLocationApi(userInfo.city),
+                uri: buildTencentGetLocationApi(userInfo.city ? userInfo.city : '大连'),
                 json: true
               });
             }
           })
           .then(res => {
             if (res.data && res.data.length) {
-              console.log(res);
-              result = { lng: res.data[0].lng, lat: res.data[0].lat };
+              result = res.data[0].location
               currentUser.longitude = result.lng;
               currentUser.latitude = result.lat;
-              userCollection.update({ userId: req.body.userId }, currentUser);
+              userCollection.update({ userId: req.query.userId }, currentUser);
             } else {
               result = res;
             }
@@ -116,7 +115,6 @@ export class UserRouter extends BaseRouter {
               `An error has been occured while getting user's location, Details: ${err}`
             );
           });
-        console.log("success");
         res.send(result);
       }
     );

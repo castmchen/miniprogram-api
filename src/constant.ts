@@ -1,3 +1,5 @@
+import { encode } from "punycode";
+
 //#region  MONGO
 
 export const DB_CONFIG = {
@@ -20,8 +22,8 @@ export const WECHAT_LOGIN_URL = `https://api.weixin.qq.com/sns/jscode2session?ap
 //#region TENCENT MAP
 
 const TENCENTMAP_COMMON_KEY = "d84d6d83e0e51e481e50454ccbe8986b";
-export function buildTencentGetLocationApi(palce: String) {
-  let TENCENTMAP_GETLOACTION_URL = `https://apis.map.qq.com/ws/place/v1/search?keyword=${place}&key=${TENCENTMAP_COMMON_KEY}&boundary=region(${place},0)`;
+export function buildTencentGetLocationApi(place: String) {
+  let TENCENTMAP_GETLOACTION_URL = encodeURI(`https://apis.map.qq.com/ws/place/v1/search?keyword=${place}&key=${TENCENTMAP_COMMON_KEY}&boundary=region(${place},0)`);
   return TENCENTMAP_GETLOACTION_URL;
 }
 
