@@ -16,14 +16,10 @@ export class WeChatRouter extends BaseRouter {
       "/login",
       async (req: Request, res: Response, next: NextFunction) => {
         if (req.body != null && req.body.code) {
-          let targerUrl = WECHAT_LOGIN_URL + req.body.code;
-          let options = {
-            uri: targerUrl,
-            json: true
-          };
+          let targetUrl = WECHAT_LOGIN_URL + req.body.code;
 
           var result = { sessionId: null, userId: null };
-          await rp(options).then(async res => {
+          await rp({ uri: targetUrl, json: true }).then(async res => {
             if (res && !res.code) {
               var currentUser: userImp = null;
               await userCollection
