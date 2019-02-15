@@ -63,7 +63,9 @@ export class UserRouter extends BaseRouter {
           })
           .then(result => {
             console.log(
-              `User ${req.body.userId}'s location information longitude ${req.body.lng} latitude ${req.body.lat} has been updated successfully.`
+              `User ${req.body.userId}'s location information longitude ${
+                req.body.lng
+              } latitude ${req.body.lat} has been updated successfully.`
             );
           })
           .catch(err => {
@@ -71,7 +73,7 @@ export class UserRouter extends BaseRouter {
               `An error has been occured while updating user's location information, Details: ${err}`
             );
           });
-          res.send({ message: "success" });
+        res.send({ message: "success" });
       }
     );
 
@@ -99,6 +101,7 @@ export class UserRouter extends BaseRouter {
           })
           .then(res => {
             if (res.data && res.data.length) {
+              console.log(res);
               result = { lng: res.data[0].lng, lat: res.data[0].lat };
               currentUser.longitude = result.lng;
               currentUser.latitude = result.lat;
