@@ -92,7 +92,7 @@ export class WeChatRouter extends BaseRouter {
               `An error has been occured while getting user information, Details: ${err}`
             );
             res.send({
-              message: "user information has been modified, check fail."
+              message: "User information has been modified, check fail."
             });
           });
         var sha1Code = crypto.createHash("sha1");
@@ -111,7 +111,7 @@ export class WeChatRouter extends BaseRouter {
           res.send({ message: "success" });
         } else {
           res.send({
-            message: "user information has been modified, check fail."
+            message: "User information has been modified, check fail."
           });
         }
       }

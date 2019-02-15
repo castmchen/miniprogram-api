@@ -1,3 +1,4 @@
+import { UserRouter } from "./routes/user";
 import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
@@ -31,10 +32,9 @@ export class Server {
 
     mongoose.Promise = global.Promise;
     mongoose
-      .connect(
-        `${DB_CONFIG.ConnectionString}/${DB_CONFIG.DBName}`,
-        { useNewUrlParser: true }
-      )
+      .connect(`${DB_CONFIG.ConnectionString}/${DB_CONFIG.DBName}`, {
+        useNewUrlParser: true
+      })
       .then(db => {
         console.log("Mongo DB has been connect succfully.");
         this.setuprouters();
@@ -75,12 +75,29 @@ export class Server {
   }
 
   public setuprouters() {
-    var indexRouter: express.Router = express.Router();
+    //#region 配置初始路由
+
+    const indexRouter: express.Router = express.Router();
     IndexRouter.create(indexRouter);
     this.app.use(indexRouter);
 
-    var wechatRouter: express.Router = express.Router();
+    //#endregion
+
+    //#region 配置wechat路由
+
+    const wechatRouter: express.Router = express.Router();
     WeChatRouter.create(wechatRouter);
     this.app.use("/wechat", wechatRouter);
+
+    //#endregion
+
+    //#region 配置user路由
+
+    const userRouter: express.Router = express.Router();
+    this.app.use();
+    UserRouter.create(userRouter);
+    this.app.use("/user", userRouter);
+
+    //#endregion
   }
 }
