@@ -50,8 +50,8 @@ export class UserRouter extends BaseRouter {
           .findOne({ userId: req.body.userId })
           .then(userInfo => {
             if (userInfo) {
-              userInfo.longitude = req.body.location.lng;
-              userInfo.latitude = req.body.loaction.lat;
+              userInfo.longitude = req.body.lng;
+              userInfo.latitude = req.body.lat;
               userInfo.updatedTime = Date.now();
               return userCollection.updateOne(
                 { userId: userInfo.userId },
@@ -61,15 +61,15 @@ export class UserRouter extends BaseRouter {
           })
           .then(result => {
             console.log(
-              `User information has been updated, Details: ${result}`
+              `User ${req.body.userId}'s location information longitude ${req.body.lng} latitude ${req.body.lat} has been updated successfully.`
             );
           })
           .catch(err => {
             console.error(
-              `An error has been occured while updating user information, Details: ${err}`
+              `An error has been occured while updating user's location information, Details: ${err}`
             );
           });
-        res.send("success");
+          res.send({ message: "success" });
       }
     );
 

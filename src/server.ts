@@ -94,7 +94,6 @@ export class Server {
     //#region 配置user路由
 
     const userRouter: express.Router = express.Router();
-    this.app.use();
     UserRouter.create(userRouter);
     this.app.use("/user", userRouter);
 
