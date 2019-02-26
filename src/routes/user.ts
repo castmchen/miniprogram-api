@@ -49,7 +49,7 @@ export class UserRouter extends BaseRouter {
       "/updateuserlocation",
       (req: Request, res: Response, next: NextFunction) => {
         userCollection
-          .findOne({ userId: req.body.userId })
+          .findOne({ userId: req.body.locationInfo.userId })
           .then(userInfo => {
             if (userInfo) {
               userInfo.longitude = req.body.lng;
