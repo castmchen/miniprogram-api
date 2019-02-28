@@ -36,12 +36,12 @@ export class Server {
         useNewUrlParser: true
       })
       .then(db => {
-        console.log("Mongo DB has been connect succfully.");
+        console.log("Mongo DB has been connected successfully.");
         this.setuprouters();
       })
       .catch(err => {
         console.error(
-          `An error has been occured while initing router config, Details: ${err}`
+          `An error has been occured while initing router configration, Details: ${err}`
         );
       });
   }

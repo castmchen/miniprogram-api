@@ -1,3 +1,4 @@
+import { locationDomain } from "./../domains/locationDomain";
 import { BaseRouter } from "./router";
 import { Router, Request, Response, NextFunction } from "express";
 import { userCollection } from "./../models/userModel";
@@ -52,8 +53,7 @@ export class UserRouter extends BaseRouter {
           .findOne({ userId: req.body.locationInfo.userId })
           .then(userInfo => {
             if (userInfo) {
-              userInfo.longitude = req.body.lng;
-              userInfo.latitude = req.body.lat;
+              userInfo.loc = new locationDomain(req.body.lng, req.body.lat);
               userInfo.updatedTime = Date.now();
               return userCollection.updateOne(
                 { userId: userInfo.userId },
@@ -89,21 +89,27 @@ export class UserRouter extends BaseRouter {
         await userCollection
           .findOne({ userId: req.query.userId })
           .then(userInfo => {
-            if (userInfo && userInfo.longitude && userInfo.latitude) {
-              return { lng: userInfo.longitude, lat: userInfo.latitude };
+            if (
+              userInfo &&
+              userInfo.loc &&
+              userInfo.loc.lng &&
+              userInfo.loc.lat
+            ) {
+              return userInfo.loc;
             } else {
               currentUser = userInfo;
               return rp({
-                uri: buildTencentGetLocationApi(userInfo.city ? userInfo.city : '大连'),
+                uri: buildTencentGetLocationApi(
+                  userInfo.city ? userInfo.city : "大连"
+                ),
                 json: true
               });
             }
           })
           .then(res => {
             if (res.data && res.data.length) {
-              result = res.data[0].location
-              currentUser.longitude = result.lng;
-              currentUser.latitude = result.lat;
+              result = res.data[0].location;
+              currentUser.loc = new locationDomain(result.lng, result.lat);
               userCollection.update({ userId: req.query.userId }, currentUser);
             } else {
               result = res;
@@ -116,6 +122,30 @@ export class UserRouter extends BaseRouter {
             );
           });
         res.send(result);
+      }
+    );
+
+    //#endregion
+
+    //#region获取圆形周边用户
+
+    router.get(
+      "/getnearbyusers",
+      async (req: Request, res: Response, next: NextFunction) => {
+        const userId = req.query.userId;
+        const loc = req.query.loc;
+
+        const circleDocument = {
+          cneter: [loc.lng, loc.lat],
+          maxDistance: 1000
+        };
+        await userCollection
+          .findByNear({ userId: { $ne: userId } }, circleDocument)
+          .then(res => {
+            if (res && res.length) {
+              console.log(res);
+            }
+          });
       }
     );
 

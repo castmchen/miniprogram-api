@@ -1,3 +1,4 @@
+import { locationDomain } from "./../domains/locationDomain";
 import { sessionDomain } from "./../domains/sessionDomain";
 import { Document } from "mongoose";
 
@@ -13,6 +14,5 @@ export interface userImp extends Document {
   session: sessionDomain;
   createdTime: Number;
   updatedTime: Number;
-  longitude: Number;
-  latitude: Number;
+  loc: locationDomain;
 }

@@ -54,9 +54,9 @@ export class baseModel<T extends Document> {
             console.error(
               `An error has been occured while getting user information, Details: ${err}`
             );
-            reject(err);
+            return reject(err);
           } else {
-            resolve(res[0]);
+            return resolve(res[0]);
           }
         });
     });
@@ -72,9 +72,28 @@ export class baseModel<T extends Document> {
             console.error(
               `An error has been occured while getting user information by sessionid => ${sessionId}, Details: ${err}`
             );
-            reject(err);
+            return reject(err);
           } else {
-            resolve(res[0]);
+            return resolve(res[0]);
+          }
+        });
+    });
+  }
+
+  findByNear(query: object, circleDocument: object): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+      this._model
+        .find(query)
+        .$where("loc")
+        .circle(circleDocument)
+        .exec((err, res) => {
+          if (err) {
+            console.error(
+              `An error has been occured while getting information by circle approach, Details: ${err}`
+            );
+            return reject(err);
+          } else {
+            return resolve(res);
           }
         });
     });

@@ -14,8 +14,7 @@ const userSchema = new Schema({
   session: { type: Schema.Types.Mixed },
   createdTime: { type: Number },
   updatedTime: { type: Number },
-  longitude: { type: Number },
-  latitude: { type: Number }
+  loc: { type: Schema.Types.Mixed }
 });
 
 userSchema.pre("save", next => {
