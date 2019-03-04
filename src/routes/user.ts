@@ -142,7 +142,7 @@ export class UserRouter extends BaseRouter {
         }
         const userId = req.query.userId;
         const circleDocument = {
-          cneter: [req.query.lng, req.query.lat],
+          center: [req.query.lng, req.query.lat],
           maxDistance: 1000
         };
         var callbackData = [];
