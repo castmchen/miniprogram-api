@@ -36,7 +36,7 @@ export class Server {
         useNewUrlParser: true
       })
       .then(db => {
-        console.log("Mongo DB has been connected successfully.");
+        console.log("Mongo DB has connected successfully.");
         this.setuprouters();
       })
       .catch(err => {

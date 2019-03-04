@@ -127,25 +127,35 @@ export class UserRouter extends BaseRouter {
 
     //#endregion
 
-    //#region获取圆形周边用户
+    //#region获取周边用户
 
     router.get(
       "/getnearbyusers",
       async (req: Request, res: Response, next: NextFunction) => {
+        if (
+          !req.query ||
+          !req.query.userId ||
+          !req.query.lng ||
+          !req.query.lat
+        ) {
+          res.send({ result: "query is incorrect" });
+        }
         const userId = req.query.userId;
-        const loc = req.query.loc;
-
         const circleDocument = {
-          cneter: [loc.lng, loc.lat],
+          cneter: [req.query.lng, req.query.lat],
           maxDistance: 1000
         };
+        var callbackData = [];
         await userCollection
           .findByNear({ userId: { $ne: userId } }, circleDocument)
           .then(res => {
             if (res && res.length) {
               console.log(res);
+              callbackData = res;
             }
           });
+
+        res.send({ result: callbackData });
       }
     );
 
