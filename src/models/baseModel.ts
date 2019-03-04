@@ -21,6 +21,12 @@ export class baseModel<T extends Document> {
     this._model = model<T>(collection, this._schema);
   }
 
+  createIndex(property: object){
+    this._model.createIndexes(err=>{
+      
+    })
+  }
+
   create(obj: Object): Promise<T> {
     return this._model.create(obj);
   }
@@ -84,12 +90,42 @@ export class baseModel<T extends Document> {
     return new Promise((resolve, reject) => {
       this._model
         .find(query)
-        .$where("loc")
-        .circle(circleDocument)
+        .where("loc")
+        .near(circleDocument)
         .exec((err, res) => {
           if (err) {
             console.error(
-              `An error has been occured while getting information by circle approach, Details: ${err}`
+              `An error has been occured while getting nearby users, Details: ${err}`
+            );
+            return reject(err);
+          } else {
+            return resolve(res);
+          }
+        });
+    });
+  }
+
+  findNearbyByLocation(userId: string, lng: string, lat: string): Promise<T[]>{
+    return new Promise((resolve, reject) => {
+      this._model
+        .find({
+          userId: {
+            $ne: userId
+          },
+          loc: { 
+            $near: { 
+              $geometry: {
+                type: "Point", 
+                coordinates: [Number(lng), Number(lat)]
+               },
+               $maxDistance: 1000
+             } 
+           }
+         })
+        .exec((err, res) => {
+          if (err) {
+            console.error(
+              `An error has been occured while getting nearby users, Details: ${err}`
             );
             return reject(err);
           } else {

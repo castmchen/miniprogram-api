@@ -33,7 +33,8 @@ export class Server {
     mongoose.Promise = global.Promise;
     mongoose
       .connect(`${DB_CONFIG.ConnectionString}/${DB_CONFIG.DBName}`, {
-        useNewUrlParser: true
+        useNewUrlParser: true,
+        useCreateIndex: true
       })
       .then(db => {
         console.log("Mongo DB has connected successfully.");

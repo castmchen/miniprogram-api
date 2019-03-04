@@ -50,7 +50,7 @@ export class UserRouter extends BaseRouter {
       "/updateuserlocation",
       (req: Request, res: Response, next: NextFunction) => {
         userCollection
-          .findOne({ userId: req.body.locationInfo.userId })
+          .findOne({ userId: req.body.userId })
           .then(userInfo => {
             if (userInfo) {
               userInfo.loc = new locationDomain(req.body.lng, req.body.lat);
@@ -141,13 +141,9 @@ export class UserRouter extends BaseRouter {
           res.send({ result: "query is incorrect" });
         }
         const userId = req.query.userId;
-        const circleDocument = {
-          center: [req.query.lng, req.query.lat],
-          maxDistance: 1000
-        };
         var callbackData = [];
         await userCollection
-          .findByNear({ userId: { $ne: userId } }, circleDocument)
+          .findNearbyByLocation(req.query.userId, req.query.lng, req.query.lat)
           .then(res => {
             if (res && res.length) {
               console.log(res);
