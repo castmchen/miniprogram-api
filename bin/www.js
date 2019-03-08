@@ -12,9 +12,9 @@ const httpServer = http.createServer(app)
 httpServer.on("error", onError)
 httpServer.on("listening", onListening)
 const wss = new webSocket.Server({ noServer: true })
-const socketListener = require('../dist/socket/socket')
+const onConnection = require('../dist/socket/socket')
 wss.on("connection", (ws) => {
-    socket.onConnection(ws)
+    onConnection.onConnection(ws)
 })
 httpServer.on('upgrade', (request, socket, head) => {
     if (request.url === '/chat') {
