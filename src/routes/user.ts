@@ -1,21 +1,21 @@
-import { locationDomain } from "./../domains/locationDomain";
-import { BaseRouter } from "./router";
-import { Router, Request, Response, NextFunction } from "express";
-import { userCollection } from "./../models/userModel";
-import { userImp } from "./../interfaces/userImp";
-import { buildTencentGetLocationApi } from "../constant";
-const rp = require("request-promise");
+import { locationDomain } from './../domains/locationDomain';
+import { BaseRouter } from './router';
+import { Router, Request, Response, NextFunction } from 'express';
+import { userCollection } from './../models/userModel';
+import { userImp } from './../interfaces/userImp';
+import { buildTencentGetLocationApi } from '../constant';
+const rp = require('request-promise');
 
 export class UserRouter extends BaseRouter {
   public static create(router: Router) {
     //#region 通过id获取用户
 
     router.get(
-      "/getuserbyid",
+      '/getuserbyid',
       async (req: Request, res: Response, next: NextFunction) => {
         var currentUser: userImp = null;
         await userCollection
-          .findOne({ userId: req.body.userId })
+          .findOne({ userId: req.query.userId })
           .then(userInfo => {
             currentUser = userInfo;
           });
@@ -29,11 +29,11 @@ export class UserRouter extends BaseRouter {
     //#region 通过sessionid获取用户
 
     router.get(
-      "/getuserbysessionid",
+      '/getuserbysessionid',
       async (req: Request, res: Response, next: NextFunction) => {
         var currentUser: userImp = null;
         await userCollection
-          .findOneBySessionId(req.body.sessionId)
+          .findOneBySessionId(req.query.sessionId)
           .then(userInfo => {
             currentUser = userInfo;
           });
@@ -47,7 +47,7 @@ export class UserRouter extends BaseRouter {
     //#region 更新用戶地理坐標
 
     router.post(
-      "/updateuserlocation",
+      '/updateuserlocation',
       (req: Request, res: Response, next: NextFunction) => {
         userCollection
           .findOne({ userId: req.body.userId })
@@ -73,7 +73,7 @@ export class UserRouter extends BaseRouter {
               `An error has been occured while updating user's location information, Details: ${err}`
             );
           });
-        res.send({ message: "success" });
+        res.send({ message: 'success' });
       }
     );
 
@@ -82,7 +82,7 @@ export class UserRouter extends BaseRouter {
     //#region 获取用户地理坐标
 
     router.get(
-      "/getuserlocation",
+      '/getuserlocation',
       async (req: Request, res: Response, next: NextFunction) => {
         var result = { lng: null, lat: null };
         var currentUser = null;
@@ -100,7 +100,7 @@ export class UserRouter extends BaseRouter {
               currentUser = userInfo;
               return rp({
                 uri: buildTencentGetLocationApi(
-                  userInfo.city ? userInfo.city : "大连"
+                  userInfo.city ? userInfo.city : '大连'
                 ),
                 json: true
               });
@@ -130,7 +130,7 @@ export class UserRouter extends BaseRouter {
     //#region获取周边用户
 
     router.get(
-      "/getnearbyusers",
+      '/getnearbyusers',
       async (req: Request, res: Response, next: NextFunction) => {
         if (
           !req.query ||
@@ -138,7 +138,7 @@ export class UserRouter extends BaseRouter {
           !req.query.lng ||
           !req.query.lat
         ) {
-          res.send({ result: "query is incorrect" });
+          res.send({ result: 'query is incorrect' });
         }
         const userId = req.query.userId;
         var callbackData = [];
